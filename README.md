@@ -68,7 +68,7 @@ Essa API pode ser utilizada em diversos cenários, como:
 1. **Clone este repositório**:
 
     ```bash
-    git clone https://github.com/seu-usuario/api-controle-de-pessoas.git
+    git clone https://github.com/VinPaulo/PersonControllerAPI.git
     ```
 
 2. **Instale as dependências**:
