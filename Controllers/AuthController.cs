@@ -9,30 +9,40 @@ namespace Person.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController : ControllerBase // No [Authorize] here to allow public access to /login
+    public class AuthController : ControllerBase // Não adicionamos [Authorize] aqui para permitir acesso público ao endpoint /login
     {
         [HttpPost("login")]
         public IActionResult Login([FromBody] UserCredentials credentials)
         {
-            // Replace with proper user validation logic
+            // Substitua por lógica adequada de validação de usuário
             if (credentials.Username == "admin" && credentials.Password == "password")
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.UTF8.GetBytes("your-very-secure-and-long-secret-key"); // Ensure the key is at least 32 characters
+
+                // Chave secreta usada para assinar o token (deve ter pelo menos 32 caracteres)
+                var key = Encoding.UTF8.GetBytes("your-very-secure-and-long-secret-key");
+
+                // Configuração do token JWT
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
+                        // Adiciona o nome do usuário como uma reivindicação (claim)
                         new Claim(ClaimTypes.Name, credentials.Username)
                     }),
-                    Expires = DateTime.UtcNow.AddHours(1), // Ensure this is set to a reasonable value
-                    Audience = "your-audience", // Ensure this matches ValidAudience in Program.cs
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                    Expires = DateTime.UtcNow.AddHours(1), // Define a expiração do token para 1 hora
+                    Audience = "your-audience", // Deve corresponder ao ValidAudience configurado no Program.cs
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature) // Assinatura do token
                 };
+
+                // Cria o token JWT
                 var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                // Retorna o token gerado no corpo da resposta
                 return Ok(new { Token = tokenHandler.WriteToken(token) });
             }
 
+            // Retorna 401 Unauthorized se as credenciais forem inválidas
             return Unauthorized();
         }
     }
