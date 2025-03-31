@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Person.Data;
 using Person.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Person.Routes
 {
@@ -53,6 +57,29 @@ namespace Person.Routes
                 return Results.Ok(person);
             });
 
+            app.MapPost("/login", (UserCredentials credentials) =>
+            {
+                // Replace with proper user validation logic
+                if (credentials.Username == "admin" && credentials.Password == "password")
+                {
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var key = Encoding.UTF8.GetBytes("your-secret-key"); // Replace with your secret key
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new[]
+                        {
+                            new Claim(ClaimTypes.Name, credentials.Username)
+                        }),
+                        Expires = DateTime.UtcNow.AddHours(1),
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                    };
+
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    return Results.Ok(new { Token = tokenHandler.WriteToken(token) });
+                }
+
+                return Results.Unauthorized();
+            });
         }
     }
 }

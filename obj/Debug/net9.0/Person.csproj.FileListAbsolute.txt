@@ -131,3 +131,12 @@ C:\Users\Paulo\Person\obj\Debug\net9.0\refint\Person.dll
 C:\Users\Paulo\Person\obj\Debug\net9.0\Person.pdb
 C:\Users\Paulo\Person\obj\Debug\net9.0\Person.genruntimeconfig.cache
 C:\Users\Paulo\Person\obj\Debug\net9.0\ref\Person.dll
+C:\Users\Paulo\Person\obj\Debug\net9.0\Person.sourcelink.json
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Paulo\Person\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
