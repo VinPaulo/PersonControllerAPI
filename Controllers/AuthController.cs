@@ -9,18 +9,17 @@ namespace Person.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController : ControllerBase // Não adicionamos [Authorize] aqui para permitir acesso público ao endpoint /login
+    public class AuthController : ControllerBase // permitir acesso público ao endpoint /login
     {
         [HttpPost("login")]
         public IActionResult Login([FromBody] UserCredentials credentials)
         {
-            // Substitua por lógica adequada de validação de usuário
             if (credentials.Username == "admin" && credentials.Password == "password")
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
 
                 // Chave secreta usada para assinar o token (deve ter pelo menos 32 caracteres)
-                var key = Encoding.UTF8.GetBytes("your-very-secure-and-long-secret-key");
+                var key = Encoding.UTF8.GetBytes("minhasupersecretaechavecom32caracteres");
 
                 // Configuração do token JWT
                 var tokenDescriptor = new SecurityTokenDescriptor
@@ -31,7 +30,8 @@ namespace Person.Controllers
                         new Claim(ClaimTypes.Name, credentials.Username)
                     }),
                     Expires = DateTime.UtcNow.AddHours(1), // Define a expiração do token para 1 hora
-                    Audience = "your-audience", // Deve corresponder ao ValidAudience configurado no Program.cs
+                    Issuer = "https://meusistema.com",
+                    Audience = "https://meusistema.com", // Deve corresponder ao ValidAudience configurado no Program.cs
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature) // Assinatura do token
                 };
 
