@@ -102,7 +102,7 @@ namespace Person.Controllers
         private string HashPassword(string password)
         {
             // Use a fixed salt for all passwords
-            byte[] salt = Encoding.UTF8.GetBytes("MeuSaltSuperSecretoPara2023");
+            byte[] salt = Encoding.UTF8.GetBytes("SuperSecretSaltOnePiece2025.");
             
             // Use PBKDF2 algorithm with many iterations
             using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
@@ -114,7 +114,7 @@ namespace Person.Controllers
         private bool VerifyPasswordHash(string password, string storedHash)
         {
             // Use the same salt and parameters as in HashPassword
-            byte[] salt = Encoding.UTF8.GetBytes("MeuSaltSuperSecretoPara2023");
+            byte[] salt = Encoding.UTF8.GetBytes("SuperSecretSaltOnePiece2025.");
             
             using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
             byte[] hash = pbkdf2.GetBytes(32);
