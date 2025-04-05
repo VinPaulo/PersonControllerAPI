@@ -19,72 +19,81 @@ namespace Person.Routes
             route.MapPost(pattern: "",
             async (PersonRequest req, PersonContext context) =>
             {
-                var person = new PersonModel(req.name); // Cria uma nova instância de PersonModel
-                await context.AddAsync(person); // Adiciona a pessoa ao contexto
-                await context.SaveChangesAsync(); // Salva as alterações no banco de dados
+                var person = new PersonModel(req.Name);
+                await context.AddAsync(person);
+                await context.SaveChangesAsync();
+                return Results.Created($"/person/{person.Id}", person); // Adicionando retorno adequado
             });
 
             // Endpoint para listar todas as pessoas
             route.MapGet(pattern: "",
             async (PersonContext context) =>
             {
-                var people = await context.People.ToListAsync(); // Obtém todas as pessoas do banco de dados
-                return Results.Ok(people); // Retorna a lista de pessoas
+                var people = await context.People.ToListAsync();
+                return Results.Ok(people);
             });
 
             // Endpoint para atualizar o nome de uma pessoa pelo ID
             route.MapPut(pattern: "{id:guid}",
             async (Guid id, PersonRequest req, PersonContext context) =>
             {
-                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id); // Busca a pessoa pelo ID
+                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (person == null)
-                    return Results.NotFound(); // Retorna 404 se a pessoa não for encontrada
+                    return Results.NotFound();
 
-                person.ChangeName(req.name); // Atualiza o nome da pessoa
-                await context.SaveChangesAsync(); // Salva as alterações no banco de dados
+                person.ChangeName(req.Name); 
+                await context.SaveChangesAsync();
 
-                return Results.Ok(person); // Retorna a pessoa atualizada
+                return Results.Ok(person);
             });
 
             // Endpoint para desativar uma pessoa pelo ID
             route.MapDelete(pattern: "{id:guid}",
             async (Guid id, PersonContext context) =>
             {
-                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id); // Busca a pessoa pelo ID
+                var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
 
                 if (person == null)
-                    return Results.NotFound(); // Retorna 404 se a pessoa não for encontrada
+                    return Results.NotFound();
 
-                person.SetInactive(); // Marca a pessoa como inativa
-                await context.SaveChangesAsync(); // Salva as alterações no banco de dados
+                person.SetInactive();
+                await context.SaveChangesAsync();
 
-                return Results.Ok(person); // Retorna a pessoa desativada
+                return Results.Ok(person);
             });
 
             // Endpoint para login e geração de token JWT
             app.MapPost("/login", (UserCredentials credentials) =>
             {
+                // Validação de modelo
+                if (string.IsNullOrWhiteSpace(credentials.Username) || string.IsNullOrWhiteSpace(credentials.Password))
+                {
+                    return Results.BadRequest(new { message = "Username and password are required" });
+                }
+
                 // Substituir pela lógica de validação de usuário adequada
                 if (credentials.Username == "admin" && credentials.Password == "password")
                 {
                     var tokenHandler = new JwtSecurityTokenHandler();
-                    var key = Encoding.UTF8.GetBytes("your-secret-key"); // Substituir pela chave secreta real
+                    var key = Encoding.UTF8.GetBytes("minhasupersecretaechavecom32caracteres"); // Atualizando para usar a mesma chave
                     var tokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = new ClaimsIdentity(new[]
                         {
-                            new Claim(ClaimTypes.Name, credentials.Username) // Adiciona o nome do usuário como claim
+                            new Claim(ClaimTypes.Name, credentials.Username)
                         }),
-                        Expires = DateTime.UtcNow.AddHours(1), // Define a expiração do token
-                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature) // Define o algoritmo de assinatura
+                        Expires = DateTime.UtcNow.AddHours(1),
+                        Issuer = "https://meusistema.com", // Adicionando issuer consistente
+                        Audience = "https://meusistema.com", // Adicionando audience consistente
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                     };
 
-                    var token = tokenHandler.CreateToken(tokenDescriptor); // Cria o token JWT
-                    return Results.Ok(new { Token = tokenHandler.WriteToken(token) }); // Retorna o token gerado
+                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    return Results.Ok(new { Token = tokenHandler.WriteToken(token) });
                 }
 
-                return Results.Unauthorized(); // Retorna 401 se as credenciais forem inválidas
+                return Results.Unauthorized();
             });
         }
     }
