@@ -11,7 +11,7 @@
             <h1 class="mb-1">Pessoas</h1>
             <p class="text-muted m-0">Gerencie o cadastro de pessoas.</p>
         </div>
-        <button class="btn btn-primary" @onclick="NavigateToCreate">
+        <button class="btn btn-primary" @onclick="NavigateToCreate" title="Clique aqui para cadastrar uma nova pessoa no sistema">
             <span class="bi bi-plus-lg me-2"></span>Nova Pessoa
         </button>
     </div>
@@ -51,10 +51,10 @@
                             <small class="text-muted d-block text-truncate">ID: @person.Id</small>
                         </div>
                         <div class="d-flex justify-content-end gap-2 mt-auto pt-3 border-top" style="border-color: var(--border-color) !important;">
-                             <button class="btn btn-sm btn-outline-light" title="Editar" @onclick="() => NavigateToEdit(person.Id)">
+                             <button class="btn btn-sm btn-outline-light" title="Editar os dados cadastrais desta pessoa" @onclick="() => NavigateToEdit(person.Id)">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" title="Excluir" @onclick="() => DeletePerson(person.Id)">
+                            <button class="btn btn-sm btn-outline-danger" title="Excluir o registro desta pessoa permanentemente" @onclick="() => DeletePerson(person.Id)">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
