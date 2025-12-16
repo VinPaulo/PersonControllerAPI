@@ -1,0 +1,70 @@
+@page "/people/create"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Nova Pessoa | Person App</PageTitle>
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Nova Pessoa</h1>
+            <p class="text-muted m-0">Preencha os dados para cadastrar uma nova pessoa.</p>
+        </div>
+        <button class="btn btn-outline-secondary" @onclick="NavigateToPeople">
+            <span class="bi bi-arrow-left me-2"></span>Voltar
+        </button>
+    </div>
+
+    <div class="card-modern p-4" style="max-width: 600px; margin: 0 auto;">
+        <EditForm Model="@personRequest" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <InputText id="name" class="form-control" @bind-Value="personRequest.Name" />
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-check-lg me-2"></span>Salvar
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private PersonRequest personRequest = new PersonRequest();
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("person/create", personRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/people");
+            }
+            else
+            {
+                // Handle error (could add a status message logic here later)
+                Console.WriteLine("Erro ao criar pessoa.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+        }
+    }
+
+    private void NavigateToPeople()
+    {
+        Navigation.NavigateTo("/people");
+    }
+
+    public class PersonRequest
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+}

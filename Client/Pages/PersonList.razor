@@ -1,5 +1,6 @@
 @page "/people"
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 <PageTitle>Pessoas | Person App</PageTitle>
 
@@ -9,7 +10,7 @@
             <h1 class="mb-1">Pessoas</h1>
             <p class="text-muted m-0">Gerencie o cadastro de pessoas.</p>
         </div>
-        <button class="btn btn-primary">
+        <button class="btn btn-primary" @onclick="NavigateToCreate">
             <span class="bi bi-plus-lg me-2"></span>Nova Pessoa
         </button>
     </div>
@@ -84,5 +85,10 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
+    }
+
+    private void NavigateToCreate()
+    {
+        Navigation.NavigateTo("/people/create");
     }
 }

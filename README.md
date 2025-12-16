@@ -1,89 +1,107 @@
-# API Controle de Pessoas
+# Sistema de Controle de Pessoas
 
-A **API Controle de Pessoas** é uma solução eficiente para gerenciar o cadastro de indivíduos, oferecendo suporte completo para as operações **CRUD** (Create, Read, Update, Delete). Utilizando o banco de dados **PostgreSQL**, a API segue as melhores práticas de desenvolvimento **RESTful**, garantindo simplicidade e escalabilidade.
+Este projeto é uma solução completa (Full Stack) para o gerenciamento de cadastro de pessoas, composta por uma **API em .NET 10** robusta e um **Frontend em Blazor WebAssembly** moderno. 
+
+O sistema oferece operações completas de **CRUD** (Create, Read, Update, Delete), autenticação via **JWT**, e foi desenhado para ser facilmente escalável e containerizado com **Docker**.
 
 ---
 
-### 🚀 **Funcionalidades Principais**
+### 🚀 **Funcionalidades**
 
-- **Cadastro de Pessoas** (`POST /pessoas`)  
-  Adiciona uma nova pessoa ao sistema, permitindo o envio de dados como nome, idade, e-mail, entre outros atributos.
+#### **API (Backend)**
+- **Cadastro de Pessoas** (`POST /pessoas`): Cria novos registros com validação.
+- **Consulta** (`GET /pessoas` e `/pessoas/{id}`): Listagem geral e detalhada.
+- **Atualização** (`PUT /pessoas/{id}`): Modificação de dados existentes.
+- **Remoção** (`DELETE /pessoas/{id}`): Exclusão física de registros.
+- **Segurança**: Autenticação e Autorização via tokens **JWT (JSON Web Token)**.
 
-- **Consulta de Pessoas** (`GET /pessoas` e `GET /pessoas/{id}`)  
-  Recupera a lista de todas as pessoas cadastradas ou os dados específicos de uma pessoa pelo seu ID.
-
-- **Atualização de Dados** (`PUT /pessoas/{id}`)  
-  Permite a atualização das informações de uma pessoa existente no banco de dados.
-
-- **Remoção de Pessoas** (`DELETE /pessoas/{id}`)  
-  Exclui um registro de pessoa de forma permanente do sistema.
+#### **Cliente (Frontend)**
+- **Interface Interativa**: Desenvolvida em **Blazor WebAssembly**, rodando diretamente no navegador do cliente.
+- **Consumo de API**: Integração fluida com o backend para exibir e manipular dados.
+- **Design Responsivo**: Layout construído com componentes modernos.
 
 ---
 
 ### ⚙️ **Tecnologias Utilizadas**
 
-- **Linguagem**: C#
-- **Banco de Dados**: PostgreSQL
-- **ORM**: [Entity Framework Core (EF Core)](https://docs.microsoft.com/en-us/ef/core/)
-- **Metodologia**: Minimal API
-- **Framework**: [ASP.NET / .NET Web API](https://dotnet.microsoft.com/en-us/apps/aspnet)
-- **Ferramentas de Teste**: Swagger, Postman
-- **Gerenciador de Banco de Dados**: DBeaver
+#### **Backend**
+- **Framework**: [.NET 10 (Preview)](https://dotnet.microsoft.com/)
+- **Tipo de Projeto**: ASP.NET Core Web API (Minimal API)
+- **Banco de Dados**: 
+    - **PostgreSQL** (Produção/Docker)
+    - **InMemory** (Desenvolvimento/Testes rápidos)
+- **ORM**: Entity Framework Core
+- **Documentação**: Swagger / OpenAPI
+
+#### **Frontend**
+- **Framework**: [Blazor WebAssembly](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+- **Linguagem**: C# (Rodando no Browser)
+
+#### **Infraestrutura**
+- **Containerização**: Docker e Docker Compose
+- **Gerenciamento de DB**: DBeaver (Recomendado para acesso externo ao Postgres)
 
 ---
 
-### 🛠️ **Pacotes e Ferramentas**
+### 🔧 **Como Executar o Projeto**
 
-A API foi construída utilizando os seguintes pacotes:
+Você pode rodar o projeto de duas formas principais: usando **Docker** (recomendado para ver tudo funcionando junto) ou manualmente (para desenvolvimento).
 
-- **Microsoft.EntityFrameworkCore**: Facilitando a interação com o banco de dados PostgreSQL.
-- **Microsoft.EntityFrameworkCore.Tools**: Suporte para migrações e comandos no Entity Framework.
-- **Microsoft.EntityFrameworkCore.Design**: Necessário para gerar migrações e outras operações de design do banco de dados.
-- **NpgSql**: Provedor de dados para PostgreSQL, essencial para a comunicação entre a aplicação e o banco de dados.
+#### **Opção 1: Usando Docker (Recomendado)**
+Esta opção sobe o banco de dados PostgreSQL e a API automaticamente.
 
----
-
-### 🧪 **Testes e Desenvolvimento**
-
-Durante o desenvolvimento, a **API** foi testada utilizando:
-
-- **Swagger**: Para uma interface interativa, que valida as funcionalidades de cada endpoint de forma visual.
-- **Postman**: Para simulação de requisições HTTP e garantir o funcionamento correto da API.
-- **DBeaver**: Para gerenciar o banco de dados PostgreSQL, visualizando e manipulando diretamente os dados armazenados.
-
----
-
-### 💡 **Aplicações**
-
-Essa API pode ser utilizada em diversos cenários, como:
-
-- **Sistemas Administrativos**
-- **Controle de Acesso**
-- **Gestão de Cadastro de Clientes**
-
----
-
-### 🔧 **Como Usar**
-
-1. **Clone este repositório**:
-
+1.  Certifique-se de ter o [Docker](https://www.docker.com/) instalado.
+2.  Na raiz do projeto, execute:
     ```bash
-    git clone https://github.com/VinPaulo/PersonControllerAPI.git
+    docker-compose up -d
     ```
+    Isso iniciará o banco de dados e a API.
+3.  A API estará acessível em: `http://localhost:5000` (ou porta configurada no docker-compose).
 
-2. **Instale as dependências**:
+#### **Opção 2: Execução Manual (Desenvolvimento)**
 
-    Execute o comando `dotnet restore` para instalar os pacotes necessários.
+**Pré-requisitos**: .NET SDK 10.0 instalado.
 
-3. **Configure o banco de dados PostgreSQL** e execute as migrações:
+1.  **Backend (API)**
+    - Navegue até a pasta raiz.
+    - O projeto está configurado para usar um banco **InMemory** por padrão para facilitar o desenvolvimento local sem dependências externas.
+    - Execute:
+      ```bash
+      dotnet run
+      ```
+    - A API (e o Swagger) estarão disponíveis em `http://localhost:5248` (verifique o output do console).
 
-    ```bash
-    dotnet ef migrations add InitialCreate
-    dotnet ef database update
-    ```
-
-4. **Execute a API**:
-
-    Execute o comando `dotnet run` para iniciar o servidor da API.
+2.  **Frontend (Blazor)**
+    - Em um novo terminal, navegue até a pasta `Client`:
+      ```bash
+      cd Client
+      ```
+    - Execute:
+      ```bash
+      dotnet run
+      ```
+    - O navegador abrirá a aplicação (geralmente em `http://localhost:5200` ou similar).
 
 ---
+
+### 🔐 **Autenticação**
+
+Alguns endpoints podem requerer autenticação. O projeto utiliza **Bearer Token (JWT)**.
+- Ao fazer login (se implementado) ou configurar o ambiente, você receberá um token.
+- No **Swagger**, clique no botão "Authorize" e insira o token no formato: `Bearer SEU_TOKEN_AQUI`.
+
+---
+
+### 📂 **Estrutura do Projeto**
+
+- `/` (Raiz): Contém a API (.NET Web API), Dockerfile e configurações.
+- `/Client`: Contém o projeto Frontend (Blazor WebAssembly).
+- `/Controllers` e `/Routes`: Definição dos endpoints da API.
+- `/Data`: Contexto do banco de dados e migrações.
+- `/Models`: Modelos de dados compartilhados.
+
+---
+
+### 🤝 **Contribuindo**
+
+Sinta-se à vontade para abrir _issues_ ou enviar _pull requests_ com melhorias.
