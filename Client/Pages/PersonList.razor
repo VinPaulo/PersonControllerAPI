@@ -1,0 +1,55 @@
+@page "/people"
+@inject HttpClient Http
+
+<PageTitle>Pessoas</PageTitle>
+
+<h1>Lista de Pessoas</h1>
+
+<p>Busca dados da API em http://localhost:5028</p>
+
+@if (people == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people)
+            {
+                <tr>
+                    <td>@person.Id</td>
+                    <td>@person.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Person[]? people;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            people = await Http.GetFromJsonAsync<Person[]>("api/person");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao buscar pessoas: {ex.Message}");
+        }
+    }
+
+    public class Person
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+}

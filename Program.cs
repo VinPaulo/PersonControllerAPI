@@ -14,15 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Define as configurações do JWT (o token de autenticação)
-// Define as configurações do JWT (o token de autenticação)
 var jwtSettings = new JwtSettings();
 builder.Configuration.Bind("JwtSettings", jwtSettings);
 
 
-// Configuração do Banco de Dados
-// Registra o contexto do banco
+// Registra o contexto do banco (Usando banco em memória para facilitar os testes)
 builder.Services.AddDbContext<PersonContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseInMemoryDatabase("PersonDb"));
 builder.Services.AddScoped<PersonContext>();
 
 // Configuração do Swagger
@@ -116,6 +114,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");      // Aplica a política de CORS que definimos
 app.UseAuthentication();      // Ativa a autenticação
 app.UseAuthorization();       // Ativa a autorização
+
+// Redireciona a raiz para o Swagger
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 // Mapeamento de Rotas
 app.MapControllers();         // Mapeia os controllers tradicionais
