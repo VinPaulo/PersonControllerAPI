@@ -1,0 +1,32 @@
+
+# .NET Core
+*.sln.DotSettings.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Bb]in/
+[Oo]bj/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio Code
+.vscode/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.launch
+*.json
+*.lock
+
+# Exceptions (keep these)
+!appsettings.json
+!NuGet.Config
+!launchSettings.json

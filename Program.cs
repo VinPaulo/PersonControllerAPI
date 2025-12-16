@@ -14,12 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Define as configurações do JWT (o token de autenticação)
-var jwtSettings = new JwtSettings
-{
-    Issuer = "https://meusistema.com",         // Quem está emitindo o token
-    Audience = "https://meusistema.com",       // Para quem o token é válido
-    Key = "minhasupersecretaechavecom32caracteres"  // Chave secreta pra assinar o token
-};
+// Define as configurações do JWT (o token de autenticação)
+var jwtSettings = new JwtSettings();
+builder.Configuration.Bind("JwtSettings", jwtSettings);
+
 
 // Configuração do Banco de Dados
 // Registra o contexto do banco
@@ -114,7 +112,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configuração do Pipeline de Requisições HTTP
-app.UseHttpsRedirection();    // Redireciona HTTP para HTTPS
+// app.UseHttpsRedirection();    // Redireciona HTTP para HTTPS
 app.UseCors("AllowAll");      // Aplica a política de CORS que definimos
 app.UseAuthentication();      // Ativa a autenticação
 app.UseAuthorization();       // Ativa a autorização
