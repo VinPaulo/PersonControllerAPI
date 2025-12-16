@@ -1,6 +1,7 @@
 @page "/people"
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Pessoas | Person App</PageTitle>
 
@@ -50,10 +51,10 @@
                             <small class="text-muted d-block text-truncate">ID: @person.Id</small>
                         </div>
                         <div class="d-flex justify-content-end gap-2 mt-auto pt-3 border-top" style="border-color: var(--border-color) !important;">
-                             <button class="btn btn-sm btn-outline-light" title="Editar">
+                             <button class="btn btn-sm btn-outline-light" title="Editar" @onclick="() => NavigateToEdit(person.Id)">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" title="Excluir">
+                            <button class="btn btn-sm btn-outline-danger" title="Excluir" @onclick="() => DeletePerson(person.Id)">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -90,5 +91,35 @@
     private void NavigateToCreate()
     {
         Navigation.NavigateTo("/people/create");
+    }
+
+    private void NavigateToEdit(Guid id)
+    {
+        Navigation.NavigateTo($"/people/edit/{id}");
+    }
+
+    private async Task DeletePerson(Guid id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir esta pessoa?");
+        if (confirmed)
+        {
+            try
+            {
+                var response = await Http.DeleteAsync($"person/deleteId/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    // Refresh the list
+                    people = await Http.GetFromJsonAsync<Person[]>("person/list");
+                }
+                else
+                {
+                    Console.WriteLine("Erro ao excluir pessoa.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+            }
+        }
     }
 }

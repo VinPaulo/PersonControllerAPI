@@ -1,0 +1,110 @@
+@page "/people/edit/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Editar Pessoa | Person App</PageTitle>
+
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Editar Pessoa</h1>
+            <p class="text-muted m-0">Atualize os dados da pessoa.</p>
+        </div>
+        <button class="btn btn-outline-secondary" @onclick="NavigateToPeople">
+            <span class="bi bi-arrow-left me-2"></span>Voltar
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner"></div>
+        </div>
+    }
+    else
+    {
+        <div class="card-modern p-4" style="max-width: 600px; margin: 0 auto;">
+            <EditForm Model="@personRequest" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nome</label>
+                    <InputText id="name" class="form-control" @bind-Value="personRequest.Name" />
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="bi bi-check-lg me-2"></span>Salvar
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private PersonRequest personRequest = new PersonRequest();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var person = await Http.GetFromJsonAsync<PersonResponse>($"person/getId/{Id}");
+            if (person != null)
+            {
+                personRequest.Name = person.Name;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar pessoa: {ex.Message}");
+            // Navigation.NavigateTo("/people"); // Optional: redirect on error
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"person/insertId/{Id}", personRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/people");
+            }
+            else
+            {
+                Console.WriteLine("Erro ao atualizar pessoa.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+        }
+    }
+
+    private void NavigateToPeople()
+    {
+        Navigation.NavigateTo("/people");
+    }
+
+    public class PersonRequest
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "O nome é obrigatório")]
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class PersonResponse
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+}
