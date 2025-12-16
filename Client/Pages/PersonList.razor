@@ -39,7 +39,8 @@ else
     {
         try
         {
-            people = await Http.GetFromJsonAsync<Person[]>("api/person");
+            // Correction: The API endpoint is defined as /person/list in PersonEndpoints.cs
+            people = await Http.GetFromJsonAsync<Person[]>("person/list");
         }
         catch (Exception ex)
         {
@@ -49,7 +50,8 @@ else
 
     public class Person
     {
-        public int Id { get; set; }
+        // Correction: The API returns a Guid for Id, not an int
+        public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
     }
 }
