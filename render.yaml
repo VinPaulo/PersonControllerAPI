@@ -1,0 +1,37 @@
+services:
+  # O Backend (API)
+  - type: web
+    name: person-controller-api
+    runtime: docker
+    plan: free
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: person-db
+          property: connectionString
+      - key: JwtSettings__Key
+        generateValue: true
+      - key: JwtSettings__Issuer
+        value: PersonApi
+      - key: JwtSettings__Audience
+        value: PersonApiUser
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+
+  # O Frontend (Client)
+  - type: web
+    name: person-controller-client
+    runtime: docker
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./Client/Dockerfile
+    envVars:
+      - key: API_URL
+        value: https://person-controller-api.onrender.com
+
+databases:
+  - name: person-db
+    plan: free
+    databaseName: persondb
+    user: postgres

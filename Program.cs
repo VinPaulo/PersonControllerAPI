@@ -16,11 +16,50 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 // Define as configurações do JWT (o token de autenticação)
 var jwtSettings = new JwtSettings();
 builder.Configuration.Bind("JwtSettings", jwtSettings);
+// Fallback para variáveis de ambiente (comum em Docker/Render)
+if (string.IsNullOrEmpty(jwtSettings.Key))
+    jwtSettings.Key = Environment.GetEnvironmentVariable("JwtSettings__Key") ?? "MinhaChaveSuperSecretaDe32Caracteres!";
+if (string.IsNullOrEmpty(jwtSettings.Issuer))
+    jwtSettings.Issuer = Environment.GetEnvironmentVariable("JwtSettings__Issuer") ?? "PersonApi";
+if (string.IsNullOrEmpty(jwtSettings.Audience))
+    jwtSettings.Audience = Environment.GetEnvironmentVariable("JwtSettings__Audience") ?? "PersonApiUser";
 
 
-// Registra o contexto do banco (Usando banco em memória para facilitar os testes)
-builder.Services.AddDbContext<PersonContext>(options =>
-    options.UseInMemoryDatabase("PersonDb"));
+// Registra o contexto do banco
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    // Parse DATABASE_URL for Render.com
+    try 
+    {
+        var uri = new Uri(databaseUrl);
+        var db = uri.AbsolutePath.Trim('/');
+        var userInfo = uri.UserInfo.Split(':');
+        var password = userInfo.Length > 1 ? userInfo[1] : string.Empty;
+        var user = userInfo[0];
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={db};Username={user};Password={password};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro ao fazer parse da DATABASE_URL: {ex.Message}");
+    }
+}
+
+if (!string.IsNullOrEmpty(connectionString))
+{
+    builder.Services.AddDbContext<PersonContext>(options =>
+        options.UseNpgsql(connectionString));
+    Console.WriteLine("Usando PostgreSQL.");
+}
+else
+{
+    builder.Services.AddDbContext<PersonContext>(options =>
+        options.UseInMemoryDatabase("PersonDb"));
+    Console.WriteLine("Usando Banco em Memória.");
+}
+
 builder.Services.AddScoped<PersonContext>();
 
 // Configuração do Swagger
@@ -101,13 +140,9 @@ builder.Services.AddControllers();
 // Constrói a aplicação com as configurações definidas acima
 var app = builder.Build();
 
-// Ferramentas para Ambiente de Desenvolvimento
-// Só ativa o Swagger se estiver em desenvolvimento
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();          // Gera o JSON da documentação
-    app.UseSwaggerUI();        // Interface web bonitinha para ver a documentação
-}
+// Ferramentas para Ambiente de Desenvolvimento e Produção (para facilitar testes)
+app.UseSwagger();          
+app.UseSwaggerUI();
 
 // Configuração do Pipeline de Requisições HTTP
 // app.UseHttpsRedirection();    // Redireciona HTTP para HTTPS

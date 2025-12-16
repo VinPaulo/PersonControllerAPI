@@ -23,4 +23,15 @@ services:
       - JwtSettings__Key=MinhaChaveSuperSecretaDe32Caracteres!
       - JwtSettings__Issuer=PersonApi
       - JwtSettings__Audience=PersonApiUser
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  client:
+    build:
+      context: .
+      dockerfile: Client/Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - API_URL=http://localhost:5000
+    depends_on:
+      - api
